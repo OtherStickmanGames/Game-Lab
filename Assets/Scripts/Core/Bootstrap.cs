@@ -35,17 +35,30 @@ namespace DwarfClone.Core
             {
                 GameObject camObj = new GameObject("Main Camera");
                 camObj.tag = "MainCamera";
+                camObj.transform.position = new Vector3(Constants.WORLD_WIDTH / 2f, Constants.WORLD_HEIGHT / 2f, -10f);
                 mainCam = camObj.AddComponent<Camera>();
                 mainCam.orthographic = true;
                 mainCam.orthographicSize = 10f;
+                mainCam.nearClipPlane = 0.1f;
+                mainCam.farClipPlane = 100f;
                 mainCam.clearFlags = CameraClearFlags.SolidColor;
-                mainCam.backgroundColor = new Color(0.08f, 0.08f, 0.1f, 1f);
+                mainCam.backgroundColor = new Color(0.1f, 0.12f, 0.15f, 1f);
                 camObj.AddComponent<AudioListener>();
                 camObj.AddComponent<CameraController>();
             }
-            else if (mainCam.GetComponent<CameraController>() == null)
+            else
             {
-                mainCam.gameObject.AddComponent<CameraController>();
+                if (mainCam.transform.position.z >= -1f)
+                {
+                    mainCam.transform.position = new Vector3(Constants.WORLD_WIDTH / 2f, Constants.WORLD_HEIGHT / 2f, -10f);
+                }
+                mainCam.orthographic = true;
+                mainCam.nearClipPlane = 0.1f;
+                mainCam.farClipPlane = 100f;
+                if (mainCam.GetComponent<CameraController>() == null)
+                {
+                    mainCam.gameObject.AddComponent<CameraController>();
+                }
             }
 
             // 2. Systems Container

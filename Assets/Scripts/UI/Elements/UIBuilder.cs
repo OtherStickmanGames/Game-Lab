@@ -77,7 +77,8 @@ namespace DwarfClone.UI.Elements
             Vector2 anchorMin,
             Vector2 anchorMax,
             Vector2 anchoredPosition,
-            Vector2 sizeDelta)
+            Vector2 sizeDelta,
+            FontStyle fontStyle = FontStyle.Normal)
         {
             GameObject obj = new GameObject(name, typeof(RectTransform), typeof(CanvasRenderer), typeof(Text));
             obj.transform.SetParent(parent, false);
@@ -92,8 +93,11 @@ namespace DwarfClone.UI.Elements
             txt.text = content;
             txt.font = GetDefaultFont();
             txt.fontSize = fontSize;
+            txt.fontStyle = fontStyle;
             txt.color = color;
             txt.alignment = alignment;
+            txt.horizontalOverflow = HorizontalWrapMode.Wrap;
+            txt.verticalOverflow = VerticalWrapMode.Overflow;
             txt.raycastTarget = false;
 
             return txt;
@@ -133,8 +137,9 @@ namespace DwarfClone.UI.Elements
 
             if (!string.IsNullOrEmpty(label))
             {
-                CreateText(obj.transform, "Label", label, fontSize, textColor, TextAnchor.MiddleCenter,
-                    Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero);
+                Text lbl = CreateText(obj.transform, "Label", label, fontSize, textColor, TextAnchor.MiddleCenter,
+                    Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero, FontStyle.Bold);
+                lbl.horizontalOverflow = HorizontalWrapMode.Overflow;
             }
 
             return btn;
@@ -165,6 +170,80 @@ namespace DwarfClone.UI.Elements
             img.raycastTarget = false;
 
             return img;
+        }
+
+        public static ProgressBarUI CreateProgressBar(
+            Transform parent,
+            string name,
+            Vector2 anchorMin,
+            Vector2 anchorMax,
+            Vector2 anchoredPosition,
+            Vector2 sizeDelta,
+            Color bgColor,
+            Color fillColor,
+            string initialLabel = "",
+            int labelFontSize = 11)
+        {
+            GameObject bgObj = CreatePanel(parent, name + "_BG", anchorMin, anchorMax, anchoredPosition, sizeDelta, bgColor);
+
+            GameObject fillObj = new GameObject(name + "_Fill", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+            fillObj.transform.SetParent(bgObj.transform, false);
+
+            RectTransform fillRt = fillObj.GetComponent<RectTransform>();
+            fillRt.anchorMin = new Vector2(0f, 0f);
+            fillRt.anchorMax = new Vector2(0f, 1f);
+            fillRt.pivot = new Vector2(0f, 0.5f);
+            fillRt.anchoredPosition = Vector2.zero;
+            fillRt.sizeDelta = new Vector2(sizeDelta.x, 0f);
+
+            Image fillImg = fillObj.GetComponent<Image>();
+            fillImg.color = fillColor;
+            fillImg.raycastTarget = false;
+
+            Text labelTxt = null;
+            if (!string.IsNullOrEmpty(initialLabel))
+            {
+                labelTxt = CreateText(bgObj.transform, name + "_Label", initialLabel, labelFontSize, Color.white, TextAnchor.MiddleCenter,
+                    Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero, FontStyle.Bold);
+                labelTxt.horizontalOverflow = HorizontalWrapMode.Overflow;
+            }
+
+            return new ProgressBarUI
+            {
+                root = bgObj,
+                fill = fillImg,
+                label = labelTxt,
+                maxWidth = sizeDelta.x
+            };
+        }
+    }
+
+    public class ProgressBarUI
+    {
+        public GameObject root;
+        public Image fill;
+        public Text label;
+        public float maxWidth;
+
+        public void SetProgress(float pct, string labelText = null)
+        {
+            pct = Mathf.Clamp01(pct);
+            if (fill != null)
+            {
+                fill.rectTransform.sizeDelta = new Vector2(maxWidth * pct, 0f);
+            }
+            if (label != null && labelText != null)
+            {
+                label.text = labelText;
+            }
+        }
+
+        public void SetFillColor(Color color)
+        {
+            if (fill != null)
+            {
+                fill.color = color;
+            }
         }
     }
 }

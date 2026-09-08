@@ -105,12 +105,12 @@ namespace DwarfClone.UI.Panels
                 totalCoal += d.Inventory.GetItemCount("item_coal");
             }
 
-            if (populationText != null) populationText.text = $"Dwarfs: {conscious}/{pop}";
-            if (foodText != null) foodText.text = $"🍞 Food: {totalFood}";
-            if (woodText != null) woodText.text = $"🪵 Wood: {totalWood}";
-            if (stoneText != null) stoneText.text = $"🪨 Stone: {totalStone}";
-            if (ironText != null) ironText.text = $"⚔️ Iron: {totalIron}";
-            if (coalText != null) coalText.text = $"🔥 Coal: {totalCoal}";
+            if (populationText != null) populationText.text = $"👥 {conscious}/{pop}";
+            if (foodText != null) foodText.text = $"🍞 {totalFood}";
+            if (woodText != null) woodText.text = $"🪵 {totalWood}";
+            if (stoneText != null) stoneText.text = $"🪨 {totalStone}";
+            if (ironText != null) ironText.text = $"⚔️ {totalIron}";
+            if (coalText != null) coalText.text = $"🔥 {totalCoal}";
         }
     }
 }

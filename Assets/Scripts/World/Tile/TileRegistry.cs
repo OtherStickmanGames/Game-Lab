@@ -91,11 +91,53 @@ namespace DwarfClone.World.Tile
             string spriteName = data != null ? data.spriteName : type.ToString();
             Sprite spr = Resources.Load<Sprite>($"{Constants.TILES_SPRITES_PATH}{spriteName}");
 
+            if (spr == null)
+            {
+                spr = CreateFallbackSprite(type);
+            }
+
             if (spr != null)
             {
                 spriteCache[type] = spr;
             }
             return spr;
+        }
+
+        private Sprite CreateFallbackSprite(TileType type)
+        {
+            Color c = Color.gray;
+            switch (type)
+            {
+                case TileType.Grass: c = new Color(0.25f, 0.65f, 0.2f); break;
+                case TileType.Dirt: c = new Color(0.5f, 0.35f, 0.2f); break;
+                case TileType.Sand: c = new Color(0.85f, 0.75f, 0.45f); break;
+                case TileType.Mud: c = new Color(0.35f, 0.28f, 0.2f); break;
+                case TileType.Water: c = new Color(0.2f, 0.45f, 0.85f); break;
+                case TileType.Bedrock: c = new Color(0.12f, 0.12f, 0.14f); break;
+                case TileType.Granite: c = new Color(0.6f, 0.55f, 0.55f); break;
+                case TileType.Limestone: c = new Color(0.8f, 0.78f, 0.7f); break;
+                case TileType.Basalt: c = new Color(0.25f, 0.25f, 0.3f); break;
+                case TileType.Marble: c = new Color(0.9f, 0.9f, 0.92f); break;
+                case TileType.Coal_Ore: c = new Color(0.2f, 0.2f, 0.22f); break;
+                case TileType.Iron_Ore: c = new Color(0.7f, 0.45f, 0.3f); break;
+                case TileType.Copper_Ore: c = new Color(0.75f, 0.45f, 0.2f); break;
+                case TileType.Gold_Ore: c = new Color(0.95f, 0.8f, 0.15f); break;
+                case TileType.Silver_Ore: c = new Color(0.85f, 0.9f, 0.95f); break;
+                case TileType.Wall_Wood: c = new Color(0.48f, 0.3f, 0.15f); break;
+                case TileType.Floor_Wood: c = new Color(0.65f, 0.45f, 0.25f); break;
+                case TileType.Wall_Stone: c = new Color(0.45f, 0.45f, 0.45f); break;
+                case TileType.Floor_Stone: c = new Color(0.55f, 0.55f, 0.55f); break;
+                case TileType.Door_Wood: c = new Color(0.55f, 0.32f, 0.15f); break;
+                case TileType.Door_Iron: c = new Color(0.6f, 0.65f, 0.7f); break;
+                case TileType.Stairs_Up: case TileType.Stairs_Down: case TileType.Stairs_Both: c = new Color(0.7f, 0.65f, 0.55f); break;
+            }
+
+            Texture2D tex = new Texture2D(32, 32);
+            Color[] pixels = new Color[32 * 32];
+            for (int i = 0; i < pixels.Length; i++) pixels[i] = c;
+            tex.SetPixels(pixels);
+            tex.Apply();
+            return Sprite.Create(tex, new Rect(0, 0, 32, 32), new Vector2(0.5f, 0.5f), 32f);
         }
 
         public bool IsSolid(TileType type)

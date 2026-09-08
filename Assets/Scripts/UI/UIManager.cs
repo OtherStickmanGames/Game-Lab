@@ -71,7 +71,7 @@ namespace DwarfClone.UI
 
                 canvasScaler = canvasObj.GetComponent<CanvasScaler>();
                 canvasScaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-                canvasScaler.referenceResolution = new Vector2(1920, 1080);
+                canvasScaler.referenceResolution = new Vector2(1280, 720);
                 canvasScaler.matchWidthOrHeight = 0.5f;
 
                 graphicRaycaster = canvasObj.GetComponent<GraphicRaycaster>();
@@ -79,6 +79,14 @@ namespace DwarfClone.UI
             else
             {
                 canvasScaler = mainCanvas.GetComponent<CanvasScaler>();
+                if (canvasScaler == null)
+                {
+                    canvasScaler = mainCanvas.gameObject.AddComponent<CanvasScaler>();
+                }
+                canvasScaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+                canvasScaler.referenceResolution = new Vector2(1280, 720);
+                canvasScaler.matchWidthOrHeight = 0.5f;
+
                 graphicRaycaster = mainCanvas.GetComponent<GraphicRaycaster>();
             }
         }
@@ -106,7 +114,7 @@ namespace DwarfClone.UI
                 actionDockPanel = dockObj.AddComponent<ActionDockPanel>();
             }
 
-            // Character Dock UI (Bottom-Left Squad Cards)
+            // Character Dock UI (Squad Cards)
             characterDockUI = cTrans.GetComponentInChildren<CharacterDockUI>();
             if (characterDockUI == null)
             {
@@ -136,76 +144,76 @@ namespace DwarfClone.UI
 
         private void BuildHUDVisuals(Transform hudRoot)
         {
-            // Top Bar
+            // Top Bar - spans full width at the very top
             GameObject topBar = UIBuilder.CreatePanel(hudRoot, "TopBar",
                 new Vector2(0f, 1f), new Vector2(1f, 1f),
-                new Vector2(0f, -25f), new Vector2(0f, 50f),
-                new Color(0.1f, 0.12f, 0.16f, 0.95f));
+                new Vector2(0f, -24f), new Vector2(0f, 48f),
+                new Color(0.09f, 0.11f, 0.15f, 0.96f));
 
-            // Z-Level text & buttons
+            // Z-Level text & buttons (Left side)
             hudPanel.zLevelText = UIBuilder.CreateText(topBar.transform, "ZLevelText", "Z-LEVEL: 4 (Surface) [< / >]", 15,
                 Color.yellow, TextAnchor.MiddleLeft,
-                new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(140f, 0f), new Vector2(250f, 36f));
+                new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(115f, 0f), new Vector2(210f, 36f), FontStyle.Bold);
 
-            hudPanel.zUpButton = UIBuilder.CreateButton(topBar.transform, "BtnZUp", "Z ▲", 14,
-                new Color(0.25f, 0.35f, 0.45f, 1f), Color.white,
-                new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(285f, 0f), new Vector2(50f, 34f),
+            hudPanel.zUpButton = UIBuilder.CreateButton(topBar.transform, "BtnZUp", "▲ Z", 14,
+                new Color(0.22f, 0.32f, 0.44f, 1f), Color.white,
+                new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(245f, 0f), new Vector2(44f, 32f),
                 null);
 
-            hudPanel.zDownButton = UIBuilder.CreateButton(topBar.transform, "BtnZDown", "Z ▼", 14,
-                new Color(0.25f, 0.35f, 0.45f, 1f), Color.white,
-                new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(345f, 0f), new Vector2(50f, 34f),
+            hudPanel.zDownButton = UIBuilder.CreateButton(topBar.transform, "BtnZDown", "▼ Z", 14,
+                new Color(0.22f, 0.32f, 0.44f, 1f), Color.white,
+                new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(295f, 0f), new Vector2(44f, 32f),
                 null);
 
-            // Time & Speeds
+            // Time & Speeds (Center)
             hudPanel.timeText = UIBuilder.CreateText(topBar.transform, "TimeText", "Day 01 - 08:00", 15,
                 Color.white, TextAnchor.MiddleCenter,
-                new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(-150f, 0f), new Vector2(180f, 36f));
+                new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(-90f, 0f), new Vector2(160f, 36f), FontStyle.Bold);
 
             hudPanel.pauseButton = UIBuilder.CreateButton(topBar.transform, "BtnPause", "⏸️", 14,
-                new Color(0.25f, 0.25f, 0.35f, 1f), Color.white,
-                new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(-30f, 0f), new Vector2(38f, 32f),
+                new Color(0.28f, 0.28f, 0.38f, 1f), Color.white,
+                new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(10f, 0f), new Vector2(34f, 32f),
                 null);
 
             hudPanel.speed1Button = UIBuilder.CreateButton(topBar.transform, "Btn1x", "1x", 13,
-                new Color(0.25f, 0.35f, 0.3f, 1f), Color.white,
-                new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(15f, 0f), new Vector2(38f, 32f),
+                new Color(0.24f, 0.36f, 0.3f, 1f), Color.white,
+                new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(48f, 0f), new Vector2(34f, 32f),
                 null);
 
             hudPanel.speed2Button = UIBuilder.CreateButton(topBar.transform, "Btn2x", "2x", 13,
-                new Color(0.25f, 0.35f, 0.3f, 1f), Color.white,
-                new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(60f, 0f), new Vector2(38f, 32f),
+                new Color(0.24f, 0.36f, 0.3f, 1f), Color.white,
+                new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(86f, 0f), new Vector2(34f, 32f),
                 null);
 
             hudPanel.speed5Button = UIBuilder.CreateButton(topBar.transform, "Btn5x", "5x", 13,
-                new Color(0.25f, 0.35f, 0.3f, 1f), Color.white,
-                new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(105f, 0f), new Vector2(38f, 32f),
+                new Color(0.24f, 0.36f, 0.3f, 1f), Color.white,
+                new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(124f, 0f), new Vector2(34f, 32f),
                 null);
 
             // Colony Resources (Right side of top bar)
-            hudPanel.populationText = UIBuilder.CreateText(topBar.transform, "PopText", "Dwarfs: 5/5", 14,
-                Color.cyan, TextAnchor.MiddleRight,
-                new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), new Vector2(-540f, 0f), new Vector2(120f, 30f));
-
-            hudPanel.foodText = UIBuilder.CreateText(topBar.transform, "FoodText", "🍞 15", 14,
+            hudPanel.coalText = UIBuilder.CreateText(topBar.transform, "CoalText", "🔥 0", 14,
                 Color.white, TextAnchor.MiddleRight,
-                new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), new Vector2(-440f, 0f), new Vector2(90f, 30f));
-
-            hudPanel.woodText = UIBuilder.CreateText(topBar.transform, "WoodText", "🪵 0", 14,
-                Color.white, TextAnchor.MiddleRight,
-                new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), new Vector2(-340f, 0f), new Vector2(90f, 30f));
-
-            hudPanel.stoneText = UIBuilder.CreateText(topBar.transform, "StoneText", "🪨 0", 14,
-                Color.white, TextAnchor.MiddleRight,
-                new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), new Vector2(-240f, 0f), new Vector2(90f, 30f));
+                new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), new Vector2(-40f, 0f), new Vector2(75f, 32f), FontStyle.Bold);
 
             hudPanel.ironText = UIBuilder.CreateText(topBar.transform, "IronText", "⚔️ 0", 14,
                 Color.white, TextAnchor.MiddleRight,
-                new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), new Vector2(-140f, 0f), new Vector2(90f, 30f));
+                new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), new Vector2(-115f, 0f), new Vector2(75f, 32f), FontStyle.Bold);
 
-            hudPanel.coalText = UIBuilder.CreateText(topBar.transform, "CoalText", "🔥 0", 14,
+            hudPanel.stoneText = UIBuilder.CreateText(topBar.transform, "StoneText", "🪨 0", 14,
                 Color.white, TextAnchor.MiddleRight,
-                new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), new Vector2(-40f, 0f), new Vector2(90f, 30f));
+                new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), new Vector2(-190f, 0f), new Vector2(75f, 32f), FontStyle.Bold);
+
+            hudPanel.woodText = UIBuilder.CreateText(topBar.transform, "WoodText", "🪵 0", 14,
+                Color.white, TextAnchor.MiddleRight,
+                new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), new Vector2(-265f, 0f), new Vector2(75f, 32f), FontStyle.Bold);
+
+            hudPanel.foodText = UIBuilder.CreateText(topBar.transform, "FoodText", "🍞 15", 14,
+                Color.white, TextAnchor.MiddleRight,
+                new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), new Vector2(-345f, 0f), new Vector2(85f, 32f), FontStyle.Bold);
+
+            hudPanel.populationText = UIBuilder.CreateText(topBar.transform, "PopText", "👥 5/5", 14,
+                Color.cyan, TextAnchor.MiddleRight,
+                new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), new Vector2(-440f, 0f), new Vector2(105f, 32f), FontStyle.Bold);
         }
 
         private void InitializeTooltip()

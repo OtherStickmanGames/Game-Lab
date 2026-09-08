@@ -18,6 +18,9 @@ namespace DwarfClone.Entity.Base
         [SerializeField] private string spriteCategory = "Characters";
         [SerializeField] private string baseSpritePrefix = "char_warrior";
 
+        public string SpriteCategory => spriteCategory;
+        public string BaseSpritePrefix => baseSpritePrefix;
+
         private SpriteRenderer spriteRenderer;
         private EntityMovement movement;
         private AnimState currentState = AnimState.Idle;
@@ -44,6 +47,20 @@ namespace DwarfClone.Entity.Base
             spriteWalk0 = Resources.Load<Sprite>($"Sprites/{category}/{prefix}_walk_0") ?? spriteIdle;
             spriteWalk1 = Resources.Load<Sprite>($"Sprites/{category}/{prefix}_walk_1") ?? spriteIdle;
             spriteAction = Resources.Load<Sprite>($"Sprites/{category}/{prefix}_action") ?? spriteIdle;
+
+            if (spriteIdle == null)
+            {
+                Texture2D tex = new Texture2D(32, 32);
+                Color[] px = new Color[32 * 32];
+                Color c = new Color(0.85f, 0.65f, 0.45f);
+                for (int i = 0; i < px.Length; i++) px[i] = c;
+                tex.SetPixels(px);
+                tex.Apply();
+                spriteIdle = Sprite.Create(tex, new Rect(0, 0, 32, 32), new Vector2(0.5f, 0.5f), 32f);
+                spriteWalk0 = spriteIdle;
+                spriteWalk1 = spriteIdle;
+                spriteAction = spriteIdle;
+            }
 
             if (spriteRenderer != null && spriteIdle != null)
             {

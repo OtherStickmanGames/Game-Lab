@@ -28,10 +28,9 @@ namespace DwarfClone.UI.Panels
         private GameObject tabContentJobs;
 
         // Anatomy UI
-        private readonly Dictionary<BodyPartType, Image> partFills = new Dictionary<BodyPartType, Image>();
+        private readonly Dictionary<BodyPartType, ProgressBarUI> partBars = new Dictionary<BodyPartType, ProgressBarUI>();
         private readonly Dictionary<BodyPartType, Text> partTexts = new Dictionary<BodyPartType, Text>();
         private Text bloodText;
-        private Button bandageButton;
 
         // Skills UI
         private Text skillsListText;
@@ -76,50 +75,50 @@ namespace DwarfClone.UI.Panels
 
         private void BuildUIDynamically()
         {
-            // Right docked panel (Width 400, Height 640)
+            // Right docked panel (Width 420, Height 580)
             panelRoot = UIBuilder.CreatePanel(transform, "CharacterInfoPanelRoot",
                 new Vector2(1f, 0.5f), new Vector2(1f, 0.5f),
-                new Vector2(-210f, 0f), new Vector2(400f, 640f),
-                new Color(0.12f, 0.14f, 0.18f, 0.98f));
+                new Vector2(-220f, 0f), new Vector2(420f, 580f),
+                new Color(0.10f, 0.12f, 0.16f, 0.98f));
 
             // Header Title
             headerText = UIBuilder.CreateText(panelRoot.transform, "HeaderText", "Гном: Не выбран", 16,
                 Color.yellow, TextAnchor.MiddleLeft,
-                new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(15f, -22f), new Vector2(-70f, 30f));
+                new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(15f, -22f), new Vector2(-70f, 30f), FontStyle.Bold);
 
             statusText = UIBuilder.CreateText(panelRoot.transform, "StatusText", "Статус: -", 12,
                 Color.cyan, TextAnchor.MiddleLeft,
-                new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(15f, -48f), new Vector2(-70f, 22f));
+                new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(15f, -48f), new Vector2(-70f, 22f), FontStyle.Bold);
 
             // Close button ('X')
-            UIBuilder.CreateButton(panelRoot.transform, "BtnClose", "X", 14,
-                new Color(0.4f, 0.15f, 0.15f, 1f), Color.white,
-                new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-25f, -22f), new Vector2(32f, 32f),
+            UIBuilder.CreateButton(panelRoot.transform, "BtnClose", "✕", 14,
+                new Color(0.48f, 0.16f, 0.16f, 1f), Color.white,
+                new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-24f, -22f), new Vector2(30f, 30f),
                 () => SelectionManager.Instance?.ClearSelection());
 
             // Tab Navigation Bar
-            float tabW = 92f;
+            float tabW = 96f;
             float tabH = 32f;
             float tabY = -80f;
 
-            Color tabCol = new Color(0.2f, 0.25f, 0.32f, 1f);
-            UIBuilder.CreateButton(panelRoot.transform, "TabAnatomy", "Анатомия", 12, tabCol, Color.white,
-                new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(55f, tabY), new Vector2(tabW, tabH),
+            Color tabCol = new Color(0.20f, 0.25f, 0.33f, 1f);
+            UIBuilder.CreateButton(panelRoot.transform, "TabAnatomy", "Анатомия", 13, tabCol, Color.white,
+                new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(56f, tabY), new Vector2(tabW, tabH),
                 () => SetTab(Tab.Anatomy));
 
-            UIBuilder.CreateButton(panelRoot.transform, "TabSkills", "Навыки", 12, tabCol, Color.white,
-                new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(152f, tabY), new Vector2(tabW, tabH),
+            UIBuilder.CreateButton(panelRoot.transform, "TabSkills", "Навыки", 13, tabCol, Color.white,
+                new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(156f, tabY), new Vector2(tabW, tabH),
                 () => SetTab(Tab.Skills));
 
-            UIBuilder.CreateButton(panelRoot.transform, "TabInv", "Инвентарь", 12, tabCol, Color.white,
-                new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(249f, tabY), new Vector2(tabW, tabH),
+            UIBuilder.CreateButton(panelRoot.transform, "TabInv", "Инвентарь", 13, tabCol, Color.white,
+                new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(256f, tabY), new Vector2(tabW, tabH),
                 () => SetTab(Tab.Inventory));
 
-            UIBuilder.CreateButton(panelRoot.transform, "TabJobs", "Работы", 12, tabCol, Color.white,
-                new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(346f, tabY), new Vector2(tabW, tabH),
+            UIBuilder.CreateButton(panelRoot.transform, "TabJobs", "Работы", 13, tabCol, Color.white,
+                new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(356f, tabY), new Vector2(tabW, tabH),
                 () => SetTab(Tab.Jobs));
 
-            // Content Area (Y: -105 to -620)
+            // Content Area (Y: -105 to -560)
             BuildAnatomyTab();
             BuildSkillsTab();
             BuildInventoryTab();
@@ -132,16 +131,16 @@ namespace DwarfClone.UI.Panels
         {
             tabContentAnatomy = UIBuilder.CreatePanel(panelRoot.transform, "Content_Anatomy",
                 new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
-                new Vector2(0f, -50f), new Vector2(380f, 500f),
+                new Vector2(0f, -48f), new Vector2(400f, 460f),
                 new Color(0.08f, 0.1f, 0.13f, 0.5f));
 
             UIBuilder.CreateText(tabContentAnatomy.transform, "Title", "СОСТОЯНИЕ ТЕЛА (KENSHI SYSTEM)", 14,
                 Color.yellow, TextAnchor.UpperCenter,
-                new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -15f), new Vector2(360f, 22f));
+                new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -14f), new Vector2(380f, 22f), FontStyle.Bold);
 
             var parts = (BodyPartType[])Enum.GetValues(typeof(BodyPartType));
-            float startY = -55f;
-            float stepY = 55f;
+            float startY = -52f;
+            float stepY = 54f;
 
             for (int i = 0; i < parts.Length; i++)
             {
@@ -151,32 +150,29 @@ namespace DwarfClone.UI.Panels
                 string partLabel = GetPartNameRu(pt);
                 UIBuilder.CreateText(tabContentAnatomy.transform, $"Label_{pt}", partLabel, 13,
                     Color.white, TextAnchor.MiddleLeft,
-                    new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(100f, y), new Vector2(180f, 20f));
+                    new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(100f, y), new Vector2(180f, 20f), FontStyle.Bold);
 
-                // HP Bar BG
-                GameObject barBg = UIBuilder.CreatePanel(tabContentAnatomy.transform, $"BarBg_{pt}",
+                // HP Bar BG & Fill
+                ProgressBarUI bar = UIBuilder.CreateProgressBar(tabContentAnatomy.transform, $"Bar_{pt}",
                     new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(250f, y), new Vector2(180f, 16f),
-                    new Color(0.2f, 0.2f, 0.2f, 0.8f));
+                    new Color(0.18f, 0.18f, 0.18f, 0.9f), Color.green);
+                partBars[pt] = bar;
 
-                Image fill = UIBuilder.CreateImage(barBg.transform, "Fill", null, Color.green,
-                    new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(90f, 0f), new Vector2(180f, 16f));
-                partFills[pt] = fill;
-
-                Text ptText = UIBuilder.CreateText(tabContentAnatomy.transform, $"Value_{pt}", "100/100", 11,
+                Text ptText = UIBuilder.CreateText(tabContentAnatomy.transform, $"Value_{pt}", "100/100", 12,
                     Color.white, TextAnchor.MiddleCenter,
-                    new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(250f, y - 18f), new Vector2(180f, 16f));
+                    new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(250f, y - 18f), new Vector2(180f, 16f), FontStyle.Bold);
                 partTexts[pt] = ptText;
             }
 
             // Blood indicator
             bloodText = UIBuilder.CreateText(tabContentAnatomy.transform, "BloodText", "🩸 Кровь: 100 / 100", 14,
                 Color.red, TextAnchor.MiddleCenter,
-                new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 85f), new Vector2(360f, 24f));
+                new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 75f), new Vector2(380f, 24f), FontStyle.Bold);
 
             // Bandage Action Button
-            bandageButton = UIBuilder.CreateButton(tabContentAnatomy.transform, "BtnBandage", "🩹 Наложить бинт (Аптечка)", 13,
-                new Color(0.2f, 0.5f, 0.3f, 1f), Color.white,
-                new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 40f), new Vector2(260f, 38f),
+            UIBuilder.CreateButton(tabContentAnatomy.transform, "BtnBandage", "🩹 Наложить бинт (Аптечка)", 14,
+                new Color(0.20f, 0.50f, 0.32f, 1f), Color.white,
+                new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 32f), new Vector2(280f, 38f),
                 OnBandageClicked);
         }
 
@@ -287,11 +283,12 @@ namespace DwarfClone.UI.Panels
                 var pt = kvp.Key;
                 var part = kvp.Value;
 
-                if (partFills.TryGetValue(pt, out var fill))
+                if (partBars.TryGetValue(pt, out var bar))
                 {
                     float pct = part.HealthNormalized;
-                    fill.rectTransform.sizeDelta = new Vector2(180f * pct, 16f);
-                    fill.color = part.bleedingRate > 0f ? Color.red : (pct > 0.5f ? Color.green : (pct > 0.25f ? Color.yellow : Color.red));
+                    bar.SetProgress(pct);
+                    Color barCol = part.bleedingRate > 0f ? Color.red : (pct > 0.5f ? Color.green : (pct > 0.25f ? Color.yellow : Color.red));
+                    bar.SetFillColor(barCol);
                 }
 
                 if (partTexts.TryGetValue(pt, out var txt))

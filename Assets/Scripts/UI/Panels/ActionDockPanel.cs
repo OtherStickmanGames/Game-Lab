@@ -45,50 +45,50 @@ namespace DwarfClone.UI.Panels
             // Bottom dock bar container
             GameObject dockObj = UIBuilder.CreatePanel(transform, "DockBar",
                 new Vector2(0.5f, 0f), new Vector2(0.5f, 0f),
-                new Vector2(0f, 40f), new Vector2(960f, 60f),
-                new Color(0.12f, 0.14f, 0.18f, 0.95f));
+                new Vector2(0f, 32f), new Vector2(800f, 50f),
+                new Color(0.10f, 0.12f, 0.16f, 0.95f));
             dockContainer = dockObj.transform;
 
             // Current Mode Text above dock
             currentModeText = UIBuilder.CreateText(transform, "CurrentModeText",
-                "Режим: Обычный", 16, Color.yellow, TextAnchor.MiddleCenter,
+                "Режим: Обычный", 15, Color.yellow, TextAnchor.MiddleCenter,
                 new Vector2(0.5f, 0f), new Vector2(0.5f, 0f),
-                new Vector2(0f, 85f), new Vector2(800f, 26f));
+                new Vector2(0f, 68f), new Vector2(900f, 24f), FontStyle.Bold);
 
             // Main Dock Buttons
-            float btnW = 120f;
-            float btnH = 44f;
-            float spacing = 126f;
-            float startX = -375f;
+            float btnW = 108f;
+            float btnH = 38f;
+            float spacing = 112f;
+            float startX = -336f;
 
-            Color btnColor = new Color(0.2f, 0.24f, 0.3f, 1f);
+            Color btnColor = new Color(0.2f, 0.25f, 0.32f, 1f);
             Color txtColor = Color.white;
 
-            UIBuilder.CreateButton(dockContainer, "BtnDig", "⛏️ Копать", 15, btnColor, txtColor,
+            UIBuilder.CreateButton(dockContainer, "BtnDig", "⛏️ Копать", 14, btnColor, txtColor,
                 new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(startX + 0 * spacing, 0f), new Vector2(btnW, btnH),
                 () => SetBuildingMode(BuildingMode.DigArea));
 
-            UIBuilder.CreateButton(dockContainer, "BtnChop", "🪓 Рубить", 15, btnColor, txtColor,
+            UIBuilder.CreateButton(dockContainer, "BtnChop", "🪓 Рубить", 14, btnColor, txtColor,
                 new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(startX + 1 * spacing, 0f), new Vector2(btnW, btnH),
                 () => SetBuildingMode(BuildingMode.ChopTrees));
 
-            UIBuilder.CreateButton(dockContainer, "BtnGather", "🌾 Сбор", 15, btnColor, txtColor,
+            UIBuilder.CreateButton(dockContainer, "BtnGather", "🌾 Сбор", 14, btnColor, txtColor,
                 new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(startX + 2 * spacing, 0f), new Vector2(btnW, btnH),
                 () => SetBuildingMode(BuildingMode.GatherPlants));
 
-            UIBuilder.CreateButton(dockContainer, "BtnBuild", "🏗️ Стройка", 15, btnColor, txtColor,
+            UIBuilder.CreateButton(dockContainer, "BtnBuild", "🏗️ Стройка", 14, btnColor, txtColor,
                 new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(startX + 3 * spacing, 0f), new Vector2(btnW, btnH),
                 ToggleBuildSubmenu);
 
-            UIBuilder.CreateButton(dockContainer, "BtnWorkbenches", "🔨 Верстаки", 15, btnColor, txtColor,
+            UIBuilder.CreateButton(dockContainer, "BtnWorkbenches", "🔨 Верстаки", 14, btnColor, txtColor,
                 new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(startX + 4 * spacing, 0f), new Vector2(btnW, btnH),
                 ToggleWorkbenchesSubmenu);
 
-            UIBuilder.CreateButton(dockContainer, "BtnZones", "📦 Зоны", 15, btnColor, txtColor,
+            UIBuilder.CreateButton(dockContainer, "BtnZones", "📦 Зоны", 14, btnColor, txtColor,
                 new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(startX + 5 * spacing, 0f), new Vector2(btnW, btnH),
                 ToggleZonesSubmenu);
 
-            UIBuilder.CreateButton(dockContainer, "BtnCancel", "❌ Отмена", 15, new Color(0.45f, 0.15f, 0.15f, 1f), txtColor,
+            UIBuilder.CreateButton(dockContainer, "BtnCancel", "❌ Отмена", 14, new Color(0.48f, 0.16f, 0.16f, 1f), txtColor,
                 new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(startX + 6 * spacing, 0f), new Vector2(btnW, btnH),
                 () => SetBuildingMode(BuildingMode.CancelOrders));
 
@@ -101,76 +101,82 @@ namespace DwarfClone.UI.Panels
             // 1. Build Submenu (Walls, Floors, Stairs, Doors)
             buildSubmenu = UIBuilder.CreatePanel(transform, "BuildSubmenu",
                 new Vector2(0.5f, 0f), new Vector2(0.5f, 0f),
-                new Vector2(0f, 130f), new Vector2(650f, 55f),
-                new Color(0.15f, 0.18f, 0.22f, 0.98f));
+                new Vector2(0f, 96f), new Vector2(660f, 48f),
+                new Color(0.14f, 0.17f, 0.22f, 0.98f));
             buildSubmenu.SetActive(false);
 
-            float bW = 120f;
-            float bH = 38f;
-            Color subBtnCol = new Color(0.25f, 0.3f, 0.38f, 1f);
+            float bW = 122f;
+            float bH = 36f;
+            Color subBtnCol = new Color(0.24f, 0.3f, 0.38f, 1f);
 
-            UIBuilder.CreateButton(buildSubmenu.transform, "BtnWall", "Стена", 14, subBtnCol, Color.white,
-                new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(-250f, 0f), new Vector2(bW, bH),
+            UIBuilder.CreateButton(buildSubmenu.transform, "BtnWall", "🧱 Стена", 13, subBtnCol, Color.white,
+                new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(-244f, 0f), new Vector2(bW, bH),
                 () => { SetBuildingMode(BuildingMode.BuildWall); CloseAllSubmenus(); });
 
-            UIBuilder.CreateButton(buildSubmenu.transform, "BtnFloor", "Пол", 14, subBtnCol, Color.white,
-                new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(-125f, 0f), new Vector2(bW, bH),
+            UIBuilder.CreateButton(buildSubmenu.transform, "BtnFloor", "🪵 Пол", 13, subBtnCol, Color.white,
+                new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(-122f, 0f), new Vector2(bW, bH),
                 () => { SetBuildingMode(BuildingMode.BuildFloor); CloseAllSubmenus(); });
 
-            UIBuilder.CreateButton(buildSubmenu.transform, "BtnStairsUp", "Лестн. Вверх", 13, subBtnCol, Color.white,
+            UIBuilder.CreateButton(buildSubmenu.transform, "BtnStairsUp", "🪜 Вверх", 13, subBtnCol, Color.white,
                 new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 0f), new Vector2(bW, bH),
                 () => { SetBuildingMode(BuildingMode.BuildStairsUp); CloseAllSubmenus(); });
 
-            UIBuilder.CreateButton(buildSubmenu.transform, "BtnStairsDown", "Лестн. Вниз", 13, subBtnCol, Color.white,
-                new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(125f, 0f), new Vector2(bW, bH),
+            UIBuilder.CreateButton(buildSubmenu.transform, "BtnStairsDown", "🪜 Вниз", 13, subBtnCol, Color.white,
+                new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(122f, 0f), new Vector2(bW, bH),
                 () => { SetBuildingMode(BuildingMode.BuildStairsDown); CloseAllSubmenus(); });
 
-            UIBuilder.CreateButton(buildSubmenu.transform, "BtnDoor", "Дверь", 14, subBtnCol, Color.white,
-                new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(250f, 0f), new Vector2(bW, bH),
+            UIBuilder.CreateButton(buildSubmenu.transform, "BtnDoor", "🚪 Дверь", 13, subBtnCol, Color.white,
+                new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(244f, 0f), new Vector2(bW, bH),
                 () => { SetBuildingMode(BuildingMode.BuildDoor); CloseAllSubmenus(); });
 
-            // 2. Zones Submenu (Stockpile, Farm, Hospital, Dormitory)
+            // 2. Zones Submenu (Stockpile, Farm, Workshop, Bedroom)
             zonesSubmenu = UIBuilder.CreatePanel(transform, "ZonesSubmenu",
                 new Vector2(0.5f, 0f), new Vector2(0.5f, 0f),
-                new Vector2(250f, 130f), new Vector2(520f, 55f),
-                new Color(0.15f, 0.18f, 0.22f, 0.98f));
+                new Vector2(0f, 96f), new Vector2(580f, 48f),
+                new Color(0.14f, 0.17f, 0.22f, 0.98f));
             zonesSubmenu.SetActive(false);
 
-            UIBuilder.CreateButton(zonesSubmenu.transform, "BtnStockpile", "Склад", 14, subBtnCol, Color.white,
-                new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(-190f, 0f), new Vector2(bW, bH),
+            float zW = 135f;
+            UIBuilder.CreateButton(zonesSubmenu.transform, "BtnStockpile", "📦 Склад", 13, subBtnCol, Color.white,
+                new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(-205f, 0f), new Vector2(zW, bH),
                 () => { BuildingSystem.Instance?.SelectZoneToDesignate(ZoneType.Stockpile); CloseAllSubmenus(); });
 
-            UIBuilder.CreateButton(zonesSubmenu.transform, "BtnFarm", "Ферма", 14, subBtnCol, Color.white,
-                new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(-60f, 0f), new Vector2(bW, bH),
+            UIBuilder.CreateButton(zonesSubmenu.transform, "BtnFarm", "🌾 Ферма", 13, subBtnCol, Color.white,
+                new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(-68f, 0f), new Vector2(zW, bH),
                 () => { BuildingSystem.Instance?.SelectZoneToDesignate(ZoneType.Farm); CloseAllSubmenus(); });
 
-            UIBuilder.CreateButton(zonesSubmenu.transform, "BtnWorkshop", "Мастерская", 14, subBtnCol, Color.white,
-                new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(70f, 0f), new Vector2(bW, bH),
+            UIBuilder.CreateButton(zonesSubmenu.transform, "BtnWorkshop", "🔨 Цех", 13, subBtnCol, Color.white,
+                new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(68f, 0f), new Vector2(zW, bH),
                 () => { BuildingSystem.Instance?.SelectZoneToDesignate(ZoneType.Workshop); CloseAllSubmenus(); });
 
-            UIBuilder.CreateButton(zonesSubmenu.transform, "BtnDorm", "Спальня", 14, subBtnCol, Color.white,
-                new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(200f, 0f), new Vector2(bW, bH),
+            UIBuilder.CreateButton(zonesSubmenu.transform, "BtnDorm", "🛏️ Спальня", 13, subBtnCol, Color.white,
+                new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(205f, 0f), new Vector2(zW, bH),
                 () => { BuildingSystem.Instance?.SelectZoneToDesignate(ZoneType.Bedroom); CloseAllSubmenus(); });
 
             // 3. Workbenches Submenu (All 25 crafting stations!)
             workbenchesSubmenu = UIBuilder.CreatePanel(transform, "WorkbenchesSubmenu",
                 new Vector2(0.5f, 0f), new Vector2(0.5f, 0f),
-                new Vector2(0f, 290f), new Vector2(900f, 260f),
-                new Color(0.12f, 0.14f, 0.19f, 0.98f));
+                new Vector2(0f, 265f), new Vector2(880f, 310f),
+                new Color(0.11f, 0.13f, 0.18f, 0.98f));
             workbenchesSubmenu.SetActive(false);
 
             UIBuilder.CreateText(workbenchesSubmenu.transform, "Title", "ВЫБЕРИТЕ ВЕРСТАК ДЛЯ ПОСТРОЙКИ (25 СТАНЦИЙ)",
-                15, Color.yellow, TextAnchor.UpperCenter,
-                new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -15f), new Vector2(800f, 24f));
+                15, Color.yellow, TextAnchor.MiddleCenter,
+                new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -18f), new Vector2(700f, 26f), FontStyle.Bold);
+
+            UIBuilder.CreateButton(workbenchesSubmenu.transform, "BtnCloseWB", "✕", 14,
+                new Color(0.48f, 0.16f, 0.16f, 1f), Color.white,
+                new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-24f, -18f), new Vector2(30f, 28f),
+                CloseAllSubmenus);
 
             // Grid of 25 stations (5 columns x 5 rows)
             var stations = (CraftingStationType[])Enum.GetValues(typeof(CraftingStationType));
-            float itemW = 165f;
-            float itemH = 36f;
-            float gridStartX = -350f;
-            float gridStartY = -50f;
-            float stepX = 175f;
-            float stepY = 42f;
+            float itemW = 166f;
+            float itemH = 40f;
+            float gridStartX = -344f;
+            float gridStartY = -54f;
+            float stepX = 172f;
+            float stepY = 46f;
 
             for (int i = 0; i < stations.Length; i++)
             {
@@ -181,8 +187,8 @@ namespace DwarfClone.UI.Panels
 
                 string displayName = GetStationShortName(st);
 
-                UIBuilder.CreateButton(workbenchesSubmenu.transform, $"StationBtn_{st}", displayName, 12,
-                    new Color(0.22f, 0.28f, 0.36f, 1f), Color.white,
+                UIBuilder.CreateButton(workbenchesSubmenu.transform, $"StationBtn_{st}", displayName, 13,
+                    new Color(0.20f, 0.26f, 0.34f, 1f), Color.white,
                     new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), pos, new Vector2(itemW, itemH),
                     () =>
                     {

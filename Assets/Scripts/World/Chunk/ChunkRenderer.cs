@@ -15,7 +15,8 @@ namespace DwarfClone.World.Chunk
         [SerializeField] private Tilemap currentZTilemap;
         [SerializeField] private Tilemap belowZTilemap;
 
-        private static readonly Dictionary<TileType, UnityEngine.Tilemaps.Tile> tileCache = new Dictionary<TileType, UnityEngine.Tilemaps.Tile>();
+        private static readonly Dictionary<TileType, UnityEngine.Tilemaps.Tile> currentZTileCache = new Dictionary<TileType, UnityEngine.Tilemaps.Tile>();
+        private static readonly Dictionary<TileType, UnityEngine.Tilemaps.Tile> belowZTileCache = new Dictionary<TileType, UnityEngine.Tilemaps.Tile>();
         private static readonly Color belowTint = new Color(0.42f, 0.44f, 0.52f, 1.0f);
 
         private void Awake()
@@ -32,6 +33,8 @@ namespace DwarfClone.World.Chunk
 
         private void Start()
         {
+            EnsureTilemaps();
+
             if (ZLevelManager.Instance != null)
             {
                 ZLevelManager.Instance.OnZLevelChanged += HandleZLevelChanged;
@@ -40,6 +43,11 @@ namespace DwarfClone.World.Chunk
             {
                 WorldGrid.Instance.OnTileChanged += HandleTileChanged;
                 WorldGrid.Instance.OnWorldGenerated += RefreshEntireView;
+
+                if (WorldGrid.Instance.IsReady)
+                {
+                    RefreshEntireView();
+                }
             }
         }
 
@@ -58,6 +66,13 @@ namespace DwarfClone.World.Chunk
 
         public void EnsureTilemaps()
         {
+            var gridComp = GetComponent<Grid>();
+            if (gridComp == null)
+            {
+                gridComp = gameObject.AddComponent<Grid>();
+                gridComp.cellSize = new Vector3(Constants.TILE_WORLD_SIZE, Constants.TILE_WORLD_SIZE, 0f);
+            }
+
             if (currentZTilemap == null)
             {
                 GameObject curObj = new GameObject("CurrentZ_Tilemap");
@@ -117,8 +132,8 @@ namespace DwarfClone.World.Chunk
 
                     if (curType != TileType.Air)
                     {
-                        var t = GetOrCreateTile(curType, reg, Color.white);
-                        currentZTilemap.SetTile(pos, t);
+                        var t = GetOrCreateTile(curType, reg, false);
+                        if (t != null) currentZTilemap.SetTile(pos, t);
                     }
                     else if (curZ > 0)
                     {
@@ -126,8 +141,8 @@ namespace DwarfClone.World.Chunk
                         TileType belowType = grid.GetTile(x, y, curZ - 1);
                         if (belowType != TileType.Air)
                         {
-                            var t = GetOrCreateTile(belowType, reg, belowTint);
-                            belowZTilemap.SetTile(pos, t);
+                            var t = GetOrCreateTile(belowType, reg, true);
+                            if (t != null) belowZTilemap.SetTile(pos, t);
                         }
                     }
                 }
@@ -145,7 +160,8 @@ namespace DwarfClone.World.Chunk
             TileType curType = grid.GetTile(x, y, curZ);
             if (curType != TileType.Air)
             {
-                currentZTilemap.SetTile(pos, GetOrCreateTile(curType, reg, Color.white));
+                var t = GetOrCreateTile(curType, reg, false);
+                currentZTilemap.SetTile(pos, t);
                 belowZTilemap.SetTile(pos, null);
             }
             else
@@ -156,7 +172,8 @@ namespace DwarfClone.World.Chunk
                     TileType belowType = grid.GetTile(x, y, curZ - 1);
                     if (belowType != TileType.Air)
                     {
-                        belowZTilemap.SetTile(pos, GetOrCreateTile(belowType, reg, belowTint));
+                        var t = GetOrCreateTile(belowType, reg, true);
+                        belowZTilemap.SetTile(pos, t);
                     }
                     else
                     {
@@ -166,12 +183,21 @@ namespace DwarfClone.World.Chunk
             }
         }
 
-        private static UnityEngine.Tilemaps.Tile GetOrCreateTile(TileType type, TileRegistry reg, Color tint)
+        private static UnityEngine.Tilemaps.Tile GetOrCreateTile(TileType type, TileRegistry reg, bool isBelow)
         {
+            var cache = isBelow ? belowZTileCache : currentZTileCache;
+            if (cache.TryGetValue(type, out var cached) && cached != null)
+            {
+                return cached;
+            }
+
             Sprite spr = reg.GetSprite(type);
+            if (spr == null) return null;
+
             var tile = ScriptableObject.CreateInstance<UnityEngine.Tilemaps.Tile>();
             tile.sprite = spr;
-            tile.color = tint;
+            tile.color = isBelow ? belowTint : Color.white;
+            cache[type] = tile;
             return tile;
         }
     }

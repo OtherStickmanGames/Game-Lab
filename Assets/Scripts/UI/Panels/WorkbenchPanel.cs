@@ -17,8 +17,7 @@ namespace DwarfClone.UI.Panels
         public Text stationTitleText;
         public Text operatorText;
         public Text queueStatusText;
-        public Image currentProgressBar;
-        public Text progressLabel;
+        public ProgressBarUI progressBarUI;
 
         // Container for recipes & queue list
         public Transform recipesContainer;
@@ -63,71 +62,64 @@ namespace DwarfClone.UI.Panels
 
         private void BuildUIDynamically()
         {
-            // Center-Left panel (Width 480, Height 640)
+            // Centered panel (Width 480, Height 560)
             panelRoot = UIBuilder.CreatePanel(transform, "WorkbenchPanelRoot",
                 new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
-                new Vector2(0f, 20f), new Vector2(500f, 620f),
-                new Color(0.11f, 0.13f, 0.17f, 0.98f));
+                new Vector2(0f, 10f), new Vector2(480f, 560f),
+                new Color(0.10f, 0.12f, 0.16f, 0.98f));
 
             // Title
             stationTitleText = UIBuilder.CreateText(panelRoot.transform, "StationTitle", "Верстак", 16,
                 Color.yellow, TextAnchor.MiddleLeft,
-                new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(20f, -22f), new Vector2(-60f, 30f));
+                new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(20f, -22f), new Vector2(-60f, 30f), FontStyle.Bold);
 
             // Close button ('X')
-            UIBuilder.CreateButton(panelRoot.transform, "BtnClose", "X", 14,
-                new Color(0.45f, 0.15f, 0.15f, 1f), Color.white,
-                new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-25f, -22f), new Vector2(32f, 32f),
+            UIBuilder.CreateButton(panelRoot.transform, "BtnClose", "✕", 14,
+                new Color(0.48f, 0.16f, 0.16f, 1f), Color.white,
+                new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-24f, -22f), new Vector2(30f, 30f),
                 () => SelectionManager.Instance?.SelectStation(null));
 
             // Operator Section
             operatorText = UIBuilder.CreateText(panelRoot.transform, "OperatorText", "Оператор: Нет", 13,
                 Color.white, TextAnchor.MiddleLeft,
-                new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(20f, -55f), new Vector2(-200f, 24f));
+                new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(20f, -54f), new Vector2(-200f, 24f), FontStyle.Bold);
 
             UIBuilder.CreateButton(panelRoot.transform, "BtnAssignDwarf", "Назначить гнома", 12,
-                new Color(0.2f, 0.35f, 0.5f, 1f), Color.white,
-                new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-155f, -55f), new Vector2(120f, 28f),
+                new Color(0.20f, 0.35f, 0.50f, 1f), Color.white,
+                new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-155f, -54f), new Vector2(120f, 28f),
                 AssignSelectedDwarf);
 
             UIBuilder.CreateButton(panelRoot.transform, "BtnClearWorker", "Снять", 12,
-                new Color(0.35f, 0.2f, 0.2f, 1f), Color.white,
-                new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-45f, -55f), new Vector2(60f, 28f),
+                new Color(0.38f, 0.20f, 0.20f, 1f), Color.white,
+                new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-45f, -54f), new Vector2(60f, 28f),
                 ClearWorker);
 
             // Progress Bar (Current Craft)
-            GameObject pBg = UIBuilder.CreatePanel(panelRoot.transform, "Progress_BG",
-                new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -95f), new Vector2(460f, 20f),
-                new Color(0.2f, 0.2f, 0.2f, 0.9f));
-
-            currentProgressBar = UIBuilder.CreateImage(pBg.transform, "Fill", null, new Color(0.2f, 0.8f, 0.3f),
-                new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(230f, 0f), new Vector2(460f, 20f));
-
-            progressLabel = UIBuilder.CreateText(pBg.transform, "ProgressLabel", "Прогресс: 0%", 11,
-                Color.white, TextAnchor.MiddleCenter,
-                new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(460f, 20f));
+            progressBarUI = UIBuilder.CreateProgressBar(panelRoot.transform, "CraftProgress",
+                new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -92f), new Vector2(440f, 22f),
+                new Color(0.18f, 0.18f, 0.18f, 0.9f), new Color(0.2f, 0.8f, 0.3f), "В ожидании работы", 12);
 
             // Section: Current Queue
             UIBuilder.CreateText(panelRoot.transform, "QueueTitle", "ТЕКУЩАЯ ОЧЕРЕДЬ ПРОИЗВОДСТВА:", 13,
                 Color.yellow, TextAnchor.MiddleLeft,
-                new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(20f, -125f), new Vector2(-40f, 22f));
+                new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(20f, -122f), new Vector2(-40f, 22f), FontStyle.Bold);
 
             GameObject qContainerObj = UIBuilder.CreatePanel(panelRoot.transform, "QueueContainer",
-                new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -185f), new Vector2(460f, 95f),
+                new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -180f), new Vector2(440f, 90f),
                 new Color(0.08f, 0.1f, 0.14f, 0.6f));
             queueContainer = qContainerObj.transform;
 
             queueStatusText = UIBuilder.CreateText(queueContainer, "QueueEmpty", "Очередь заказов пуста", 12,
                 Color.gray, TextAnchor.MiddleCenter,
-                new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(440f, 80f));
+                new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(420f, 75f));
 
             // Section: Available Recipes
             UIBuilder.CreateText(panelRoot.transform, "RecipesTitle", "ДОСТУПНЫЕ РЕЦЕПТЫ КРАФТА:", 13,
                 Color.yellow, TextAnchor.MiddleLeft,
-                new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(20f, -250f), new Vector2(-40f, 22f));
+                new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(20f, -240f), new Vector2(-40f, 22f), FontStyle.Bold);
 
             GameObject rContainerObj = UIBuilder.CreatePanel(panelRoot.transform, "RecipesContainer",
-                new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 175f), new Vector2(460f, 320f),
+                new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 145f), new Vector2(440f, 260f),
                 new Color(0.08f, 0.1f, 0.14f, 0.6f));
             recipesContainer = rContainerObj.transform;
         }
@@ -321,25 +313,17 @@ namespace DwarfClone.UI.Panels
 
         private void RefreshDynamicProgress()
         {
-            if (boundStation == null) return;
+            if (boundStation == null || progressBarUI == null) return;
 
             var order = boundStation.GetCurrentOrder();
             if (order != null && order.recipe != null && order.recipe.craftTime > 0f)
             {
                 float pct = Mathf.Clamp01(boundStation.CurrentProgress / order.recipe.craftTime);
-                if (currentProgressBar != null)
-                {
-                    currentProgressBar.rectTransform.sizeDelta = new Vector2(460f * pct, 20f);
-                }
-                if (progressLabel != null)
-                {
-                    progressLabel.text = $"{order.recipe.recipeName}: {(int)(pct * 100f)}%";
-                }
+                progressBarUI.SetProgress(pct, $"{order.recipe.recipeName}: {(int)(pct * 100f)}%");
             }
             else
             {
-                if (currentProgressBar != null) currentProgressBar.rectTransform.sizeDelta = new Vector2(0f, 20f);
-                if (progressLabel != null) progressLabel.text = "В ожидании работы";
+                progressBarUI.SetProgress(0f, "В ожидании работы");
             }
         }
     }

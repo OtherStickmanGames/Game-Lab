@@ -15,9 +15,9 @@ namespace DwarfClone.UI.Panels
         public Image background;
         public Text nameText;
         public Text hotkeyText;
-        public Image hpFill;
+        public ProgressBarUI hpBar;
         public Text hpText;
-        public Image hungerFill;
+        public ProgressBarUI hungerBar;
         public Text actionText;
         public DwarfCharacterController dwarf;
         private float lastClickTime = 0f;
@@ -67,7 +67,7 @@ namespace DwarfClone.UI.Panels
             bool isSelected = dwarf.IsSelected;
             if (background != null)
             {
-                background.color = isSelected ? new Color(0.25f, 0.4f, 0.6f, 0.95f) : new Color(0.14f, 0.16f, 0.2f, 0.9f);
+                background.color = isSelected ? new Color(0.24f, 0.44f, 0.70f, 0.98f) : new Color(0.11f, 0.13f, 0.17f, 0.92f);
             }
 
             // Name & Archetype
@@ -78,7 +78,7 @@ namespace DwarfClone.UI.Panels
                 nameText.color = dwarf.IsDead ? Color.gray : (dwarf.Health.IsIncapacitated ? Color.magenta : Color.white);
             }
 
-            // Health calculation (Average of body parts or blood)
+            // Health calculation (Sum of body parts)
             float totalHp = 0f;
             float maxHp = 600f; // 6 parts * 100
             foreach (var part in dwarf.Health.AllParts.Values)
@@ -87,18 +87,18 @@ namespace DwarfClone.UI.Panels
             }
             float hpPct = Mathf.Clamp01(totalHp / maxHp);
 
-            if (hpFill != null)
+            if (hpBar != null)
             {
-                RectTransform rt = hpFill.rectTransform;
-                rt.sizeDelta = new Vector2(170f * hpPct, 10f);
-                hpFill.color = dwarf.Health.IsBleeding ? Color.red : (hpPct > 0.5f ? Color.green : (hpPct > 0.25f ? Color.yellow : Color.red));
+                hpBar.SetProgress(hpPct);
+                Color barColor = dwarf.Health.IsBleeding ? Color.red : (hpPct > 0.5f ? Color.green : (hpPct > 0.25f ? Color.yellow : Color.red));
+                hpBar.SetFillColor(barColor);
             }
 
             if (hpText != null)
             {
                 if (dwarf.Health.IsBleeding)
                 {
-                    hpText.text = $"HP: {(int)totalHp}/600 🩸 БЛЕЕДИНГ!";
+                    hpText.text = $"HP: {(int)totalHp}/600 🩸 БЛИДИНГ!";
                     hpText.color = Color.red;
                 }
                 else
@@ -110,11 +110,10 @@ namespace DwarfClone.UI.Panels
 
             // Hunger
             float hungerPct = Mathf.Clamp01(dwarf.Needs.Hunger / 100f);
-            if (hungerFill != null)
+            if (hungerBar != null)
             {
-                RectTransform rt = hungerFill.rectTransform;
-                rt.sizeDelta = new Vector2(170f * hungerPct, 6f);
-                hungerFill.color = hungerPct > 0.4f ? new Color(0.9f, 0.7f, 0.2f) : Color.red;
+                hungerBar.SetProgress(hungerPct);
+                hungerBar.SetFillColor(hungerPct > 0.4f ? new Color(0.95f, 0.75f, 0.2f) : Color.red);
             }
 
             // Action
@@ -156,19 +155,19 @@ namespace DwarfClone.UI.Panels
 
         private void BuildCardsDynamically()
         {
-            // Bottom-Left container: 5 cards horizontally
-            float cardW = 180f;
-            float cardH = 95f;
-            float spacing = 185f;
-            float startX = 100f;
-            float startY = 120f;
+            // Top-Left colonist bar (RimWorld style directly below TopBar)
+            float cardW = 148f;
+            float cardH = 64f;
+            float spacing = 152f;
+            float startX = 12f + cardW / 2f;
+            float startY = -86f; // TopBar is 0..-48, card is -54..-118
 
             for (int i = 0; i < 5; i++)
             {
                 GameObject cardObj = UIBuilder.CreatePanel(transform, $"DwarfCard_{i}",
-                    new Vector2(0f, 0f), new Vector2(0f, 0f),
+                    new Vector2(0f, 1f), new Vector2(0f, 1f),
                     new Vector2(startX + i * spacing, startY), new Vector2(cardW, cardH),
-                    new Color(0.14f, 0.16f, 0.2f, 0.9f));
+                    new Color(0.11f, 0.13f, 0.17f, 0.92f));
 
                 DwarfCardView view = new DwarfCardView();
                 view.root = cardObj;
@@ -180,38 +179,33 @@ namespace DwarfClone.UI.Panels
 
                 // Hotkey badge [1]
                 view.hotkeyText = UIBuilder.CreateText(cardObj.transform, "Hotkey", $"[{i + 1}]", 13,
-                    Color.yellow, TextAnchor.UpperLeft,
-                    new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(18f, -12f), new Vector2(30f, 20f));
+                    Color.yellow, TextAnchor.MiddleLeft,
+                    new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(16f, -12f), new Vector2(28f, 18f), FontStyle.Bold);
 
                 // Name text
                 view.nameText = UIBuilder.CreateText(cardObj.transform, "Name", "Dwarf", 12,
-                    Color.white, TextAnchor.UpperLeft,
-                    new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(105f, -12f), new Vector2(140f, 20f));
+                    Color.white, TextAnchor.MiddleLeft,
+                    new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(80f, -12f), new Vector2(-40f, 18f), FontStyle.Bold);
 
                 // HP Bar BG & Fill
-                GameObject hpBg = UIBuilder.CreatePanel(cardObj.transform, "HP_BG",
-                    new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(90f, -28f), new Vector2(170f, 10f),
-                    new Color(0.1f, 0.1f, 0.1f, 0.8f));
-                view.hpFill = UIBuilder.CreateImage(hpBg.transform, "HP_Fill", null, Color.green,
-                    new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(85f, 0f), new Vector2(170f, 10f));
+                view.hpBar = UIBuilder.CreateProgressBar(cardObj.transform, "HPBar",
+                    new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -26f), new Vector2(136f, 9f),
+                    new Color(0.12f, 0.12f, 0.12f, 0.9f), Color.green);
 
                 // HP text
                 view.hpText = UIBuilder.CreateText(cardObj.transform, "HP_Text", "HP: 600/600", 11,
                     Color.white, TextAnchor.MiddleCenter,
-                    new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -42f), new Vector2(170f, 16f));
+                    new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -36f), new Vector2(136f, 13f), FontStyle.Bold);
 
                 // Hunger Bar BG & Fill
-                GameObject hungerBg = UIBuilder.CreatePanel(cardObj.transform, "Hunger_BG",
-                    new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(90f, -54f), new Vector2(170f, 6f),
-                    new Color(0.1f, 0.1f, 0.1f, 0.8f));
-                view.hungerFill = UIBuilder.CreateImage(hungerBg.transform, "Hunger_Fill", null,
-                    new Color(0.9f, 0.7f, 0.2f),
-                    new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(85f, 0f), new Vector2(170f, 6f));
+                view.hungerBar = UIBuilder.CreateProgressBar(cardObj.transform, "HungerBar",
+                    new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -46f), new Vector2(136f, 5f),
+                    new Color(0.12f, 0.12f, 0.12f, 0.9f), new Color(0.95f, 0.75f, 0.2f));
 
                 // Action status text
                 view.actionText = UIBuilder.CreateText(cardObj.transform, "Action", "Idle", 11,
-                    new Color(0.8f, 0.85f, 0.9f), TextAnchor.MiddleCenter,
-                    new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 15f), new Vector2(170f, 20f));
+                    new Color(0.85f, 0.9f, 0.95f), TextAnchor.MiddleCenter,
+                    new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -54f), new Vector2(136f, 13f), FontStyle.Normal);
 
                 cards.Add(view);
             }

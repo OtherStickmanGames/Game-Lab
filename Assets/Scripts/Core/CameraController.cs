@@ -33,9 +33,14 @@ namespace DwarfClone.Core
                 return;
             }
             Instance = this;
-            cam = GetComponent<Camera>();
-            targetPosition = transform.position;
-            targetOrthoSize = cam.orthographicSize;
+            if (cam == null) cam = GetComponent<Camera>();
+            if (cam != null) cam.orthographic = true;
+            if (transform.position.z >= -1f)
+            {
+                transform.position = new Vector3(transform.position.x, transform.position.y, -10f);
+            }
+            targetPosition = new Vector3(transform.position.x, transform.position.y, -10f);
+            targetOrthoSize = (cam != null && cam.orthographicSize > 0f) ? cam.orthographicSize : 10f;
         }
 
         private void Update()
@@ -120,8 +125,11 @@ namespace DwarfClone.Core
 
         private void ApplyMovement()
         {
-            transform.position = Vector3.Lerp(transform.position, targetPosition, 10f * Time.unscaledDeltaTime);
-            cam.orthographicSize = Mathf.Lerp(cam.orthographicSize, targetOrthoSize, 10f * Time.unscaledDeltaTime);
+            targetPosition.z = -10f;
+            float lerpFactor = 1f / Mathf.Max(0.01f, smoothTime);
+            transform.position = Vector3.Lerp(transform.position, targetPosition, lerpFactor * Time.unscaledDeltaTime);
+            transform.position = new Vector3(transform.position.x, transform.position.y, -10f);
+            cam.orthographicSize = Mathf.Lerp(cam.orthographicSize, targetOrthoSize, lerpFactor * Time.unscaledDeltaTime);
         }
 
         private void ClampTargetPosition()
@@ -133,12 +141,14 @@ namespace DwarfClone.Core
 
             targetPosition.x = Mathf.Clamp(targetPosition.x, minX, maxX);
             targetPosition.y = Mathf.Clamp(targetPosition.y, minY, maxY);
+            targetPosition.z = -10f;
         }
 
         public void FocusOn(Vector3 worldPosition)
         {
             followTarget = null;
-            targetPosition = new Vector3(worldPosition.x, worldPosition.y, transform.position.z);
+            targetPosition = new Vector3(worldPosition.x, worldPosition.y, -10f);
+            transform.position = targetPosition;
             ClampTargetPosition();
         }
 

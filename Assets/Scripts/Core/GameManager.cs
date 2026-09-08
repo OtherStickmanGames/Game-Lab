@@ -49,6 +49,12 @@ namespace DwarfClone.Core
                 WorldGenerator.Instance.GenerateWorld();
             }
 
+            // Immediately render the world tiles
+            if (ChunkRenderer.Instance != null)
+            {
+                ChunkRenderer.Instance.RefreshEntireView();
+            }
+
             // 2. Find Walkable Spawn Center on Surface
             spawnLocation = FindSuitableSpawnLocation();
             Debug.Log($"[GameManager] Squad spawn position determined at: {spawnLocation}");
@@ -68,7 +74,7 @@ namespace DwarfClone.Core
             // 6. Camera focus on spawn location
             if (CameraController.Instance != null)
             {
-                CameraController.Instance.FocusOn(new Vector3(spawnLocation.x + 0.5f, spawnLocation.y + 0.5f, 0f));
+                CameraController.Instance.FocusOn(new Vector3(spawnLocation.x + 0.5f, spawnLocation.y + 0.5f, -10f));
             }
 
             // 7. Select Squad
