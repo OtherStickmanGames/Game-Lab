@@ -102,7 +102,7 @@ namespace DwarfClone.Core
 
         private void HandleZoom()
         {
-            float scroll = Input.mouseScrollDelta;
+            float scroll = Input.mouseScrollDelta.y;
             if (Mathf.Abs(scroll) > 0.01f)
             {
                 targetOrthoSize = Mathf.Clamp(targetOrthoSize - scroll * zoomSpeed, minOrthoSize, maxOrthoSize);
