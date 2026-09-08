@@ -10,14 +10,35 @@ namespace DwarfClone.UI.Elements
 
         public static Font GetDefaultFont()
         {
+            if (defaultFont != null) return defaultFont;
+
+            // 1. Try modern Unity (2022.2+) built-in font
+            try
+            {
+                defaultFont = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            }
+            catch {}
+
+            // 2. Try older Unity built-in font
             if (defaultFont == null)
             {
-                defaultFont = Resources.GetBuiltinResource<Font>("Arial.ttf");
-                if (defaultFont == null)
+                try
+                {
+                    defaultFont = Resources.GetBuiltinResource<Font>("Arial.ttf");
+                }
+                catch {}
+            }
+
+            // 3. Fallback to OS font
+            if (defaultFont == null)
+            {
+                try
                 {
                     defaultFont = Font.CreateDynamicFontFromOSFont("Arial", 14);
                 }
+                catch {}
             }
+
             return defaultFont;
         }
 
